@@ -1,21 +1,21 @@
 #include "Arduino.h"
 #include "JsonMapper.h"
 
-String getValueFromArray(String payload, short index) {
+String getValueFromArray(String payload, unsigned short index) {
   String data = "";
-  short maxIndex = payload.length();
+  unsigned short maxIndex = payload.length();
   data = payload.substring(1, maxIndex - 1);
   maxIndex = data.length();
-  String filteredData = "";
-  for (short i = 0; i <= maxIndex; i++) {
-    if (data.charAt(i) != '"') {
-      filteredData = filteredData + data.charAt(i);
-    }
-  }
-  short found = 0;
-  short strIndex[] = { 0, -1 };
-  short filteredMaxIndex = filteredData.length();
-  for (short i = 0; i <= filteredMaxIndex && found <= index; i++) {
+  String filteredData = data;
+  // for (unsigned short i = 0; i <= maxIndex; i++) {
+  //   if (data.charAt(i) != '"') {
+  //     filteredData = filteredData + data.charAt(i);
+  //   }
+  // }
+  unsigned short found = 0;
+  unsigned short strIndex[] = { 0, -1 };
+  unsigned short filteredMaxIndex = filteredData.length();
+  for (unsigned short i = 0; i <= filteredMaxIndex && found <= index; i++) {
     if (filteredData.charAt(i) == ',' || i == filteredMaxIndex) {
       found++;
       strIndex[0] = strIndex[1] + 1;
@@ -27,14 +27,14 @@ String getValueFromArray(String payload, short index) {
 
 String getValueFromJson(String payload, String key) {
   String data = "";
-  int maxIndex = payload.length();
+  unsigned short maxIndex = payload.length();
   data = payload.substring(1, maxIndex - 1);
   maxIndex = data.length();
-  short childSkipCounter = 0;
-  short splitIndex = 0;
+  unsigned short childSkipCounter = 0;
+  unsigned short splitIndex = 0;
   String keyValuePair = "";
   String returnValue = "";
-  for (int i = 0; i < maxIndex; i++) {
+  for (unsigned short i = 0; i < maxIndex; i++) {
     if (data.charAt(i) == '{' || data.charAt(i) == '[') {
       childSkipCounter++;
     }
@@ -59,16 +59,16 @@ String getValueFromJson(String payload, String key) {
   return returnValue;
 }
 
-String getJsonFromJsonArray(String payload, short index) {
-  short objStartIndex[128];
-  short objStartIndexCounter = 0;
-  short objEndIndex[128];
-  short objEndIndexCounter = 0;
+String getJsonFromJsonArray(String payload, unsigned short index) {
+  unsigned short objStartIndex[128];
+  unsigned short objStartIndexCounter = 0;
+  unsigned short objEndIndex[128];
+  unsigned short objEndIndexCounter = 0;
   String data = "";
-  int maxIndex = payload.length();
+  unsigned short maxIndex = payload.length();
   data = payload.substring(1, maxIndex - 1);
   maxIndex = data.length();
-  for (int i = 0; i < maxIndex; i++) {
+  for (unsigned short i = 0; i < maxIndex; i++) {
     if (data.charAt(i) == '{') {
       objStartIndex[objStartIndexCounter] = i;
       objStartIndexCounter++;
@@ -81,15 +81,15 @@ String getJsonFromJsonArray(String payload, short index) {
   if (objStartIndexCounter != objEndIndexCounter) {
     return "";
   }
-  short jsonChildNumber = 1;
-  short captureIndex = 0;
+  unsigned short jsonChildNumber = 1;
+  unsigned short captureIndex = 0;
   do {
     jsonChildNumber++;
     captureIndex++;
   } while (objStartIndex[captureIndex + 1] < objEndIndex[captureIndex]);
-  short jsonLength = objStartIndexCounter / jsonChildNumber;
+  unsigned short jsonLength = objStartIndexCounter / jsonChildNumber;
   String json[jsonLength];
-  short jsonCounter = 0;
+  unsigned short jsonCounter = 0;
   do {
     json[jsonCounter] = data.substring(objStartIndex[jsonCounter * jsonChildNumber], objEndIndex[(jsonCounter * jsonChildNumber) + (jsonChildNumber - 1)] + 1);
     jsonCounter++;
@@ -97,13 +97,36 @@ String getJsonFromJsonArray(String payload, short index) {
   return json[index];
 }
 
-String buildJson(String key, String value, String valueType, String json = "{}") {
+int parseInt(String payload) {
+  return payload.toInt();
+}
+
+bool parseBool(String payload) {
+  String lowerCasePayload = payload;
+  lowerCasePayload.toLowerCase();
+  if (lowerCasePayload == "true") {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+String parseString(String payload) {
+  return payload.substring(1, payload.length() - 1);
+}
+
+JsonMapper::JsonMapper() {
+  jsonString = "{}";
+  arrayString = "[]";
+}
+
+void JsonMapper::addProperty(String key, String value, bool isString) {
   String output = "{";
   String modifer = "";
-  if (valueType == "string") {
+  if (isString) {
       modifer = "\"";
   }
-  String extractedJson = json.substring(1, json.length() - 1);
+  String extractedJson = jsonString.substring(1, jsonString.length() - 1);
   if (extractedJson.length() == 0) {
     output += "\"" + key + "\":" + modifer + value + modifer;
   } else {
@@ -111,5 +134,62 @@ String buildJson(String key, String value, String valueType, String json = "{}")
     output += ",\"" + key + "\":" + modifer + value + modifer;
   }
   output += "}";
-  return output;
+  jsonString = output;
+}
+
+void JsonMapper::addStringProperty(String key, String value) {
+  JsonMapper::addProperty(key, value, true);
+}
+
+void JsonMapper::addIntProperty(String key, int value) {
+  JsonMapper::addProperty(key, String(value), false);
+}
+
+void JsonMapper::addBoolProperty(String key, bool value) {
+  if (value) {
+    JsonMapper::addProperty(key, "true", false);
+  } else {
+    JsonMapper::addProperty(key, "false", false);
+  }
+}
+
+void JsonMapper::addValue(String value, bool isString) {
+  String output = "[";
+  String modifer = "";
+  if (isString) {
+      modifer = "\"";
+  }
+  String extractedArray = arrayString.substring(1, arrayString.length() - 1);
+  if (extractedArray.length() == 0) {
+    output += modifer + value + modifer;
+  } else {
+    output += extractedArray;
+    output += "," + modifer + value + modifer;
+  }
+  output += "]";
+  arrayString = output;
+}
+
+void JsonMapper::addStringValue(String value) {
+  JsonMapper::addValue(value, true);
+}
+
+void JsonMapper::addIntValue(int value) {
+  JsonMapper::addValue(String(value), false);
+}
+
+void JsonMapper::addBoolValue(bool value) {
+  if (value) {
+    JsonMapper::addValue("true", false);
+  } else {
+    JsonMapper::addValue("false", false);
+  }
+}
+
+String JsonMapper::getJson() {
+  return jsonString;
+}
+
+String JsonMapper::getArray() {
+  return arrayString;
 }
