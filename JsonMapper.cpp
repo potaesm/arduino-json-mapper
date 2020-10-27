@@ -251,7 +251,8 @@ void JsonMapper::setJsonArray(String payload)
   jsonArrayString = payload;
 }
 
-String JsonMapper::getJsonArrayString() {
+String JsonMapper::getJsonArrayString()
+{
   return jsonArrayString;
 }
 
@@ -267,10 +268,12 @@ String JsonMapper::getJsonByIndex(unsigned short index)
   }
 }
 
-unsigned short JsonMapper::getJsonArrayLength() {
+unsigned short JsonMapper::getJsonArrayLength()
+{
   return jsonLen;
 }
 
-unsigned short JsonMapper::getJsonChildNumber() {
+unsigned short JsonMapper::getJsonChildNumber()
+{
   return jsonChildNum;
 }
