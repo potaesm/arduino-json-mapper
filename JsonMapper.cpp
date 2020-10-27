@@ -75,7 +75,7 @@ String getValue(String payload, unsigned short index, String key, bool isFindByI
   return returnValue;
 }
 
-String getArrayValue(String payload, unsigned short index)
+String getListValue(String payload, unsigned short index)
 {
   return getValue(payload, index, "", true);
 }
@@ -109,13 +109,19 @@ String parseString(String payload)
   return payload.substring(1, payload.length() - 1);
 }
 
-JsonMapper::JsonMapper()
+Json::Json()
 {
-  jsonString = "{}";
-  arrayString = "[]";
 }
 
-void JsonMapper::setJsonProperty(String key, String value, bool isString)
+List::List()
+{
+}
+
+JsonList::JsonList()
+{
+}
+
+void Json::setJsonProperty(String key, String value, bool isString)
 {
   String output = "{";
   String modifer = "";
@@ -137,29 +143,34 @@ void JsonMapper::setJsonProperty(String key, String value, bool isString)
   jsonString = output;
 }
 
-void JsonMapper::setJsonStringProperty(String key, String value)
+void Json::setJsonStringProperty(String key, String value)
 {
-  JsonMapper::setJsonProperty(key, value, true);
+  Json::setJsonProperty(key, value, true);
 }
 
-void JsonMapper::setJsonIntegerProperty(String key, int value)
+void Json::setJsonIntegerProperty(String key, int value)
 {
-  JsonMapper::setJsonProperty(key, String(value), false);
+  Json::setJsonProperty(key, String(value), false);
 }
 
-void JsonMapper::setJsonBooleanProperty(String key, bool value)
+void Json::setJsonBooleanProperty(String key, bool value)
 {
   if (value)
   {
-    JsonMapper::setJsonProperty(key, "true", false);
+    Json::setJsonProperty(key, "true", false);
   }
   else
   {
-    JsonMapper::setJsonProperty(key, "false", false);
+    Json::setJsonProperty(key, "false", false);
   }
 }
 
-void JsonMapper::addArrayValue(String value, bool isString)
+String Json::getJson()
+{
+  return jsonString;
+}
+
+void List::addListValue(String value, bool isString)
 {
   String output = "[";
   String modifer = "";
@@ -167,53 +178,48 @@ void JsonMapper::addArrayValue(String value, bool isString)
   {
     modifer = "\"";
   }
-  String extractedArray = arrayString.substring(1, arrayString.length() - 1);
-  if (extractedArray.length() == 0)
+  String extractedList = listString.substring(1, listString.length() - 1);
+  if (extractedList.length() == 0)
   {
     output += modifer + value + modifer;
   }
   else
   {
-    output += extractedArray;
+    output += extractedList;
     output += "," + modifer + value + modifer;
   }
   output += "]";
-  arrayString = output;
+  listString = output;
 }
 
-void JsonMapper::addArrayStringValue(String value)
+void List::addListStringValue(String value)
 {
-  JsonMapper::addArrayValue(value, true);
+  List::addListValue(value, true);
 }
 
-void JsonMapper::addArrayIntegerValue(int value)
+void List::addListIntegerValue(int value)
 {
-  JsonMapper::addArrayValue(String(value), false);
+  List::addListValue(String(value), false);
 }
 
-void JsonMapper::addArrayBooleanValue(bool value)
+void List::addListBooleanValue(bool value)
 {
   if (value)
   {
-    JsonMapper::addArrayValue("true", false);
+    List::addListValue("true", false);
   }
   else
   {
-    JsonMapper::addArrayValue("false", false);
+    List::addListValue("false", false);
   }
 }
 
-String JsonMapper::getJson()
+String List::getList()
 {
-  return jsonString;
+  return listString;
 }
 
-String JsonMapper::getArray()
-{
-  return arrayString;
-}
-
-void JsonMapper::setJsonArray(String payload)
+void JsonList::setJsonList(String payload)
 {
   unsigned short objStartIndexCounter = 0;
   unsigned short objEndIndexCounter = 0;
@@ -237,7 +243,7 @@ void JsonMapper::setJsonArray(String payload)
   }
   if (objStartIndexCounter != objEndIndexCounter)
   {
-    Serial.println("Warning: Incorrect format of json array");
+    Serial.println("Warning: Incorrect format of json list");
   }
   unsigned short jsonChildNumber = 1;
   unsigned short captureIndex = 0;
@@ -248,19 +254,19 @@ void JsonMapper::setJsonArray(String payload)
   } while (objStartBracketIndex[captureIndex + 1] < objEndBracketIndex[captureIndex]);
   jsonLen = objStartIndexCounter / jsonChildNumber;
   jsonChildNum = jsonChildNumber;
-  jsonArrayString = payload;
+  jsonListString = payload;
 }
 
-String JsonMapper::getJsonArrayString()
+String JsonList::getJsonListString()
 {
-  return jsonArrayString;
+  return jsonListString;
 }
 
-String JsonMapper::getJsonByIndex(unsigned short index)
+String JsonList::getJsonByIndex(unsigned short index)
 {
   if (index < jsonLen)
   {
-    return jsonArrayString.substring(1, jsonArrayString.length() - 1).substring(objStartBracketIndex[index * jsonChildNum], objEndBracketIndex[(index * jsonChildNum) + (jsonChildNum - 1)] + 1);
+    return jsonListString.substring(1, jsonListString.length() - 1).substring(objStartBracketIndex[index * jsonChildNum], objEndBracketIndex[(index * jsonChildNum) + (jsonChildNum - 1)] + 1);
   }
   else
   {
@@ -268,12 +274,12 @@ String JsonMapper::getJsonByIndex(unsigned short index)
   }
 }
 
-unsigned short JsonMapper::getJsonArrayLength()
+unsigned short JsonList::getJsonListLength()
 {
   return jsonLen;
 }
 
-unsigned short JsonMapper::getJsonChildNumber()
+unsigned short JsonList::getJsonChildNumber()
 {
   return jsonChildNum;
 }
