@@ -97,11 +97,11 @@ String getJsonFromJsonArray(String payload, unsigned short index) {
   return json[index];
 }
 
-int parseInt(String payload) {
+int parseInteger(String payload) {
   return payload.toInt();
 }
 
-bool parseBool(String payload) {
+bool parseBoolean(String payload) {
   String lowerCasePayload = payload;
   lowerCasePayload.toLowerCase();
   if (lowerCasePayload == "true") {
@@ -141,11 +141,11 @@ void JsonMapper::addStringProperty(String key, String value) {
   JsonMapper::addProperty(key, value, true);
 }
 
-void JsonMapper::addIntProperty(String key, int value) {
+void JsonMapper::addIntegerProperty(String key, int value) {
   JsonMapper::addProperty(key, String(value), false);
 }
 
-void JsonMapper::addBoolProperty(String key, bool value) {
+void JsonMapper::addBooleanProperty(String key, bool value) {
   if (value) {
     JsonMapper::addProperty(key, "true", false);
   } else {
@@ -174,11 +174,11 @@ void JsonMapper::addStringValue(String value) {
   JsonMapper::addValue(value, true);
 }
 
-void JsonMapper::addIntValue(int value) {
+void JsonMapper::addIntegerValue(int value) {
   JsonMapper::addValue(String(value), false);
 }
 
-void JsonMapper::addBoolValue(bool value) {
+void JsonMapper::addBooleanValue(bool value) {
   if (value) {
     JsonMapper::addValue("true", false);
   } else {

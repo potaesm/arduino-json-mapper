@@ -7,12 +7,12 @@ class JsonMapper {
         JsonMapper();
         void addProperty(String key, String value, bool isString);
         void addStringProperty(String key, String value);
-        void addIntProperty(String key, int value);
-        void addBoolProperty(String key, bool value);
+        void addIntegerProperty(String key, int value);
+        void addBooleanProperty(String key, bool value);
         void addValue(String value, bool isString);
         void addStringValue(String value);
-        void addIntValue(int value);
-        void addBoolValue(bool value);
+        void addIntegerValue(int value);
+        void addBooleanValue(bool value);
         String getJson();
         String getArray();
     private:
@@ -23,8 +23,8 @@ class JsonMapper {
 extern String getJsonFromJsonArray(String payload, unsigned short index);
 extern String getValueFromArray(String payload, unsigned short index);
 extern String getValueFromJson(String payload, String key);
-extern int parseInt(String payload);
-extern bool parseBool(String payload);
+extern int parseInteger(String payload);
+extern bool parseBoolean(String payload);
 extern String parseString(String payload);
 
 #endif
