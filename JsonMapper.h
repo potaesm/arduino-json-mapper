@@ -6,10 +6,10 @@ class Json
 {
 public:
     Json();
-    void setJsonProperty(String key, String value, bool isString = false);
-    void setJsonStringProperty(String key, String value);
-    void setJsonIntegerProperty(String key, int value);
-    void setJsonBooleanProperty(String key, bool value);
+    void setProperty(String key, String value, bool isString = false);
+    void setStringProperty(String key, String value);
+    void setIntegerProperty(String key, int value);
+    void setBooleanProperty(String key, bool value);
     String getJson();
 
 private:
@@ -20,10 +20,10 @@ class List
 {
 public:
     List();
-    void addListValue(String value, bool isString = false);
-    void addListStringValue(String value);
-    void addListIntegerValue(int value);
-    void addListBooleanValue(bool value);
+    void addValue(String value, bool isString = false);
+    void addStringValue(String value);
+    void addIntegerValue(int value);
+    void addBooleanValue(bool value);
     String getList();
 
 private:
@@ -35,17 +35,14 @@ class JsonList
 public:
     JsonList();
     void setJsonList(String payload);
-    String getJsonListString();
-    String getJsonByIndex(unsigned short index);
-    unsigned short getJsonListLength();
-    unsigned short getJsonChildNumber();
+    String getJsonList();
+    String getJson(unsigned short index);
+    unsigned short length();
 
 private:
     String jsonListString = "";
-    unsigned short jsonLen = 0;
-    unsigned short jsonChildNum = 0;
-    unsigned short objStartBracketIndex[128];
-    unsigned short objEndBracketIndex[128];
+    unsigned short jsonLength = 0;
+    ::std::vector<String> jsonList;
 };
 
 extern String getListValue(String payload, unsigned short index);

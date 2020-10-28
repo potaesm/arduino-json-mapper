@@ -121,7 +121,7 @@ JsonList::JsonList()
 {
 }
 
-void Json::setJsonProperty(String key, String value, bool isString)
+void Json::setProperty(String key, String value, bool isString)
 {
   String output = "{";
   String modifer = "";
@@ -143,25 +143,25 @@ void Json::setJsonProperty(String key, String value, bool isString)
   jsonString = output;
 }
 
-void Json::setJsonStringProperty(String key, String value)
+void Json::setStringProperty(String key, String value)
 {
-  Json::setJsonProperty(key, value, true);
+  Json::setProperty(key, value, true);
 }
 
-void Json::setJsonIntegerProperty(String key, int value)
+void Json::setIntegerProperty(String key, int value)
 {
-  Json::setJsonProperty(key, String(value), false);
+  Json::setProperty(key, String(value), false);
 }
 
-void Json::setJsonBooleanProperty(String key, bool value)
+void Json::setBooleanProperty(String key, bool value)
 {
   if (value)
   {
-    Json::setJsonProperty(key, "true", false);
+    Json::setProperty(key, "true", false);
   }
   else
   {
-    Json::setJsonProperty(key, "false", false);
+    Json::setProperty(key, "false", false);
   }
 }
 
@@ -170,7 +170,7 @@ String Json::getJson()
   return jsonString;
 }
 
-void List::addListValue(String value, bool isString)
+void List::addValue(String value, bool isString)
 {
   String output = "[";
   String modifer = "";
@@ -192,25 +192,25 @@ void List::addListValue(String value, bool isString)
   listString = output;
 }
 
-void List::addListStringValue(String value)
+void List::addStringValue(String value)
 {
-  List::addListValue(value, true);
+  List::addValue(value, true);
 }
 
-void List::addListIntegerValue(int value)
+void List::addIntegerValue(int value)
 {
-  List::addListValue(String(value), false);
+  List::addValue(String(value), false);
 }
 
-void List::addListBooleanValue(bool value)
+void List::addBooleanValue(bool value)
 {
   if (value)
   {
-    List::addListValue("true", false);
+    List::addValue("true", false);
   }
   else
   {
-    List::addListValue("false", false);
+    List::addValue("false", false);
   }
 }
 
@@ -221,52 +221,64 @@ String List::getList()
 
 void JsonList::setJsonList(String payload)
 {
-  unsigned short objStartIndexCounter = 0;
-  unsigned short objEndIndexCounter = 0;
+  unsigned short childSkipCounter = 0;
+  unsigned short indexCounter = 0;
+  unsigned short splitIndex = 0;
   String data = "";
   unsigned short dataLength = payload.length();
-  data = payload.substring(1, dataLength - 1);
-  dataLength = data.length();
+  if (dataLength != 0)
+  {
+    jsonListString = payload;
+    data = payload.substring(1, dataLength - 1);
+    dataLength = data.length();
+  }
+  else
+  {
+    jsonListString = "";
+  }
   for (unsigned short i = 0; i < dataLength; i++)
   {
     char currentChar = data.charAt(i);
-    if (currentChar == '{')
+    if (currentChar == '{' || currentChar == '[')
     {
-      objStartBracketIndex[objStartIndexCounter] = i;
-      objStartIndexCounter++;
+      childSkipCounter++;
     }
-    if (currentChar == '}')
+    if (currentChar == '}' || currentChar == ']')
     {
-      objEndBracketIndex[objEndIndexCounter] = i;
-      objEndIndexCounter++;
+      childSkipCounter--;
+    }
+    if (childSkipCounter == 0 && currentChar == ',')
+    {
+      if (splitIndex == 0)
+      {
+        jsonList.push_back(data.substring(splitIndex, i));
+      }
+      else
+      {
+        jsonList.push_back(data.substring(splitIndex + 1, i));
+      }
+      splitIndex = i;
+      indexCounter++;
+    }
+    if (i == dataLength - 1)
+    {
+      jsonList.push_back(data.substring(splitIndex + 1, dataLength));
+      indexCounter++;
     }
   }
-  if (objStartIndexCounter != objEndIndexCounter)
-  {
-    Serial.println("Warning: Incorrect format of json list");
-  }
-  unsigned short jsonChildNumber = 1;
-  unsigned short captureIndex = 0;
-  do
-  {
-    jsonChildNumber++;
-    captureIndex++;
-  } while (objStartBracketIndex[captureIndex + 1] < objEndBracketIndex[captureIndex]);
-  jsonLen = objStartIndexCounter / jsonChildNumber;
-  jsonChildNum = jsonChildNumber;
-  jsonListString = payload;
+  jsonLength = indexCounter;
 }
 
-String JsonList::getJsonListString()
+String JsonList::getJsonList()
 {
   return jsonListString;
 }
 
-String JsonList::getJsonByIndex(unsigned short index)
+String JsonList::getJson(unsigned short index)
 {
-  if (index < jsonLen)
+  if (index < jsonLength)
   {
-    return jsonListString.substring(1, jsonListString.length() - 1).substring(objStartBracketIndex[index * jsonChildNum], objEndBracketIndex[(index * jsonChildNum) + (jsonChildNum - 1)] + 1);
+    return jsonList[index];
   }
   else
   {
@@ -274,12 +286,7 @@ String JsonList::getJsonByIndex(unsigned short index)
   }
 }
 
-unsigned short JsonList::getJsonListLength()
+unsigned short JsonList::length()
 {
-  return jsonLen;
-}
-
-unsigned short JsonList::getJsonChildNumber()
-{
-  return jsonChildNum;
+  return jsonLength;
 }
