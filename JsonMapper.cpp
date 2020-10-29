@@ -1,6 +1,131 @@
 #include "Arduino.h"
 #include "JsonMapper.h"
 
+String editValue(String payload, unsigned short index, String key, String value, bool isSetByIndex, bool isString)
+{
+  unsigned short childSkipCounter = 0;
+  unsigned short indexCounter = 0;
+  unsigned short splitIndex = 0;
+  unsigned short startEditIndex = 0;
+  unsigned short endEditIndex = 0;
+  unsigned short dataLength = payload.length();
+  String currentValue = "";
+  String data = "";
+  String modifer = "";
+  if (isString)
+  {
+    modifer = "\"";
+  }
+  if (dataLength != 0)
+  {
+    data = payload.substring(1, dataLength - 1);
+    dataLength = data.length();
+    for (unsigned short i = 0; i < dataLength; i++)
+    {
+      char currentChar = data.charAt(i);
+      if (currentChar == '{' || currentChar == '[')
+      {
+        childSkipCounter++;
+      }
+      if (currentChar == '}' || currentChar == ']')
+      {
+        childSkipCounter--;
+      }
+      if (childSkipCounter == 0 && currentChar == ',')
+      {
+        if (splitIndex == 0)
+        {
+          currentValue = data.substring(splitIndex, i);
+          if (isSetByIndex)
+          {
+            if (index == indexCounter)
+            {
+              startEditIndex = splitIndex;
+              endEditIndex = i;
+            }
+          }
+          else
+          {
+            if (currentValue.substring(1, currentValue.indexOf(':') - 1) == key)
+            {
+              startEditIndex = splitIndex;
+              endEditIndex = i;
+            }
+          }
+        }
+        else
+        {
+          currentValue = data.substring(splitIndex + 1, i);
+          if (isSetByIndex)
+          {
+            if (index == indexCounter)
+            {
+              startEditIndex = splitIndex + 1;
+              endEditIndex = i;
+            }
+          }
+          else
+          {
+            if (currentValue.substring(1, currentValue.indexOf(':') - 1) == key)
+            {
+              startEditIndex = splitIndex + 1;
+              endEditIndex = i;
+            }
+          }
+        }
+        splitIndex = i;
+        indexCounter++;
+      }
+      if (i == dataLength - 1)
+      {
+        currentValue = data.substring(splitIndex + 1, dataLength);
+        if (isSetByIndex)
+        {
+          if (index == indexCounter)
+          {
+            startEditIndex = splitIndex + 1;
+            endEditIndex = dataLength;
+          }
+        }
+        else
+        {
+          if (currentValue.substring(1, currentValue.indexOf(':') - 1) == key)
+          {
+            startEditIndex = splitIndex + 1;
+            endEditIndex = dataLength;
+          }
+        }
+      }
+    }
+    if (endEditIndex > startEditIndex)
+    {
+      String firstPartOriginalData = data.substring(0, startEditIndex);
+      String lastPartOriginalData = data.substring(endEditIndex, dataLength);
+      if (isSetByIndex)
+      {
+
+        return "[" + firstPartOriginalData + modifer + value + modifer + lastPartOriginalData + "]";
+      }
+      else
+      {
+        return "{" + firstPartOriginalData + "\"" + key + "\":" + modifer + value + modifer + lastPartOriginalData + "}";
+      }
+    }
+  }
+  else
+  {
+    if (isSetByIndex)
+    {
+
+      return "[" + modifer + value + modifer + "]";
+    }
+    else
+    {
+      return "{\"" + key + "\":" + modifer + value + modifer + "}";
+    }
+  }
+}
+
 String getValue(String payload, unsigned short index, String key, bool isFindByIndex)
 {
   unsigned short childSkipCounter = 0;

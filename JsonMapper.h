@@ -45,6 +45,7 @@ private:
     ::std::vector<String> jsonList;
 };
 
+extern String editValue(String payload, unsigned short index, String key, String value, bool isSetByIndex, bool isString);
 extern String getListValue(String payload, unsigned short index);
 extern String getJsonProperty(String payload, String key);
 extern int parseInteger(String payload);
