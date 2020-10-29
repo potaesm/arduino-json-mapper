@@ -6,10 +6,10 @@ class Json
 {
 public:
     Json();
-    void setProperty(String key, String value, bool isString = false);
-    void setStringProperty(String key, String value);
-    void setIntegerProperty(String key, int value);
-    void setBooleanProperty(String key, bool value);
+    void addProperty(String key, String value, bool isString = false);
+    void addStringProperty(String key, String value);
+    void addIntegerProperty(String key, int value);
+    void addBooleanProperty(String key, bool value);
     String getJson();
 
 private:

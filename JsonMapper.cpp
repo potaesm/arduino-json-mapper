@@ -109,10 +109,15 @@ String editValue(String payload, unsigned short index, String key, String value,
       {
         return "{" + firstPartOriginalData + "\"" + key + "\":" + modifer + value + modifer + lastPartOriginalData + "}";
       }
-    } else {
-      if (isSetByIndex) {
+    }
+    else
+    {
+      if (isSetByIndex)
+      {
         return "[" + data.substring(0, dataLength) + "," + modifer + value + modifer + "]";
-      } else {
+      }
+      else
+      {
         return "{" + data.substring(0, dataLength) + "," + "\"" + key + "\":" + modifer + value + modifer + "}";
       }
     }
@@ -250,7 +255,7 @@ JsonList::JsonList()
 {
 }
 
-void Json::setProperty(String key, String value, bool isString)
+void Json::addProperty(String key, String value, bool isString)
 {
   String output = "{";
   String modifer = "";
@@ -272,25 +277,25 @@ void Json::setProperty(String key, String value, bool isString)
   jsonString = output;
 }
 
-void Json::setStringProperty(String key, String value)
+void Json::addStringProperty(String key, String value)
 {
-  Json::setProperty(key, value, true);
+  Json::addProperty(key, value, true);
 }
 
-void Json::setIntegerProperty(String key, int value)
+void Json::addIntegerProperty(String key, int value)
 {
-  Json::setProperty(key, String(value), false);
+  Json::addProperty(key, String(value), false);
 }
 
-void Json::setBooleanProperty(String key, bool value)
+void Json::addBooleanProperty(String key, bool value)
 {
   if (value)
   {
-    Json::setProperty(key, "true", false);
+    Json::addProperty(key, "true", false);
   }
   else
   {
-    Json::setProperty(key, "false", false);
+    Json::addProperty(key, "false", false);
   }
 }
 
