@@ -16,7 +16,7 @@ String editValue(String payload, unsigned short index, String key, String value,
   {
     modifer = "\"";
   }
-  if (dataLength != 0)
+  if (dataLength > 2)
   {
     data = payload.substring(1, dataLength - 1);
     dataLength = data.length();
@@ -103,12 +103,17 @@ String editValue(String payload, unsigned short index, String key, String value,
       String lastPartOriginalData = data.substring(endEditIndex, dataLength);
       if (isSetByIndex)
       {
-
         return "[" + firstPartOriginalData + modifer + value + modifer + lastPartOriginalData + "]";
       }
       else
       {
         return "{" + firstPartOriginalData + "\"" + key + "\":" + modifer + value + modifer + lastPartOriginalData + "}";
+      }
+    } else {
+      if (isSetByIndex) {
+        return "[" + data.substring(0, dataLength) + "," + modifer + value + modifer + "]";
+      } else {
+        return "{" + data.substring(0, dataLength) + "," + "\"" + key + "\":" + modifer + value + modifer + "}";
       }
     }
   }
@@ -116,7 +121,6 @@ String editValue(String payload, unsigned short index, String key, String value,
   {
     if (isSetByIndex)
     {
-
       return "[" + modifer + value + modifer + "]";
     }
     else
