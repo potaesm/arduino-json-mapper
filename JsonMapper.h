@@ -11,6 +11,11 @@ public:
     void addStringProperty(String key, String value);
     void addIntegerProperty(String key, int value);
     void addBooleanProperty(String key, bool value);
+    void patchProperty(String key, String value, bool isString = false);
+    void patchStringProperty(String key, String value);
+    void patchIntegerProperty(String key, int value);
+    void patchBooleanProperty(String key, bool value);
+    void removeProperty(String key);
     String getJson();
 
 private:
@@ -26,6 +31,11 @@ public:
     void addStringValue(String value);
     void addIntegerValue(int value);
     void addBooleanValue(bool value);
+    void patchValue(unsigned short index, String value, bool isString = false);
+    void patchStringValue(unsigned short index, String value);
+    void patchIntegerValue(unsigned short index, int value);
+    void patchBooleanValue(unsigned short index, bool value);
+    void removeValue(unsigned short index);
     String getList();
 
 private:

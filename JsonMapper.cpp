@@ -352,6 +352,31 @@ void Json::addBooleanProperty(String key, bool value)
   Json::addProperty(key, booleanString, false);
 }
 
+void Json::patchProperty(String key, String value, bool isString)
+{
+  jsonString = patchJsonProperty(jsonString, key, value, isString);
+}
+
+void Json::patchStringProperty(String key, String value)
+{
+  jsonString = patchJsonStringProperty(jsonString, key, value);
+}
+
+void Json::patchIntegerProperty(String key, int value)
+{
+  jsonString = patchJsonIntegerProperty(jsonString, key, value);
+}
+
+void Json::patchBooleanProperty(String key, bool value)
+{
+  jsonString = patchJsonBooleanProperty(jsonString, key, value);
+}
+
+void Json::removeProperty(String key)
+{
+  jsonString = removeJsonProperty(jsonString, key);
+}
+
 String Json::getJson()
 {
   return jsonString;
@@ -394,6 +419,31 @@ void List::addBooleanValue(bool value)
 {
   String booleanString = value ? "true" : "false";
   List::addValue(booleanString, false);
+}
+
+void List::patchValue(unsigned short index, String value, bool isString)
+{
+  listString = patchListValue(listString, index, value, isString);
+}
+
+void List::patchStringValue(unsigned short index, String value)
+{
+  listString = patchListStringValue(listString, index, value);
+}
+
+void List::patchIntegerValue(unsigned short index, int value)
+{
+  listString = patchListIntegerValue(listString, index, value);
+}
+
+void List::patchBooleanValue(unsigned short index, bool value)
+{
+  listString = patchListBooleanValue(listString, index, value);
+}
+
+void List::removeValue(unsigned short index)
+{
+  listString = removeListValue(listString, index);
 }
 
 String List::getList()
