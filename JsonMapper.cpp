@@ -1,7 +1,7 @@
 #include "Arduino.h"
 #include "JsonMapper.h"
 
-String editValue(String payload, unsigned short index, String key, String value, bool isSetByIndex, bool isString)
+String modifyValue(String payload, unsigned short index, String key, String value, bool isSetByIndex, bool isString)
 {
   unsigned short childSkipCounter = 0;
   unsigned short indexCounter = 0;
@@ -11,11 +11,7 @@ String editValue(String payload, unsigned short index, String key, String value,
   unsigned short dataLength = payload.length();
   String currentValue = "";
   String data = "";
-  String modifer = "";
-  if (isString)
-  {
-    modifer = "\"";
-  }
+  String modifer = isString ? "\"" : "";
   if (dataLength > 2)
   {
     data = payload.substring(1, dataLength - 1);
@@ -103,10 +99,20 @@ String editValue(String payload, unsigned short index, String key, String value,
       String lastPartOriginalData = data.substring(endEditIndex, dataLength);
       if (isSetByIndex)
       {
+        if (value == "")
+        {
+          firstPartOriginalData = (endEditIndex == dataLength) ? data.substring(0, startEditIndex - 1) : firstPartOriginalData;
+          return "[" + firstPartOriginalData + data.substring(endEditIndex + 1, dataLength) + "]";
+        }
         return "[" + firstPartOriginalData + modifer + value + modifer + lastPartOriginalData + "]";
       }
       else
       {
+        if (value == "")
+        {
+          firstPartOriginalData = (endEditIndex == dataLength) ? data.substring(0, startEditIndex - 1) : firstPartOriginalData;
+          return "{" + firstPartOriginalData + data.substring(endEditIndex + 1, dataLength) + "}";
+        }
         return "{" + firstPartOriginalData + "\"" + key + "\":" + modifer + value + modifer + lastPartOriginalData + "}";
       }
     }
@@ -133,6 +139,58 @@ String editValue(String payload, unsigned short index, String key, String value,
       return "{\"" + key + "\":" + modifer + value + modifer + "}";
     }
   }
+}
+
+String patchListValue(String payload, unsigned short index, String value, bool isString)
+{
+  return modifyValue(payload, index, "", value, true, isString);
+}
+
+String patchListIntegerValue(String payload, unsigned short index, int value)
+{
+  return modifyValue(payload, index, "", String(value), true, false);
+}
+
+String patchListBooleanValue(String payload, unsigned short index, bool value)
+{
+  String booleanString = value ? "true" : "false";
+  return modifyValue(payload, index, "", booleanString, true, false);
+}
+
+String patchListStringValue(String payload, unsigned short index, String value)
+{
+  return modifyValue(payload, index, "", value, true, true);
+}
+
+String removeListValue(String payload, unsigned short index)
+{
+  return patchListStringValue(payload, index, "");
+}
+
+String patchJsonProperty(String payload, String key, String value, bool isString)
+{
+  return modifyValue(payload, 0, key, value, false, isString);
+}
+
+String patchJsonIntegerProperty(String payload, String key, int value)
+{
+  return modifyValue(payload, 0, key, String(value), false, false);
+}
+
+String patchJsonBooleanProperty(String payload, String key, bool value)
+{
+  String booleanString = value ? "true" : "false";
+  return modifyValue(payload, 0, key, booleanString, false, false);
+}
+
+String patchJsonStringProperty(String payload, String key, String value)
+{
+  return modifyValue(payload, 0, key, value, false, true);
+}
+
+String removeJsonProperty(String payload, String key)
+{
+  return patchJsonStringProperty(payload, key, "");
 }
 
 String getValue(String payload, unsigned short index, String key, bool isFindByIndex)
@@ -255,14 +313,15 @@ JsonList::JsonList()
 {
 }
 
+void Json::setJson(String payload)
+{
+  jsonString = payload;
+}
+
 void Json::addProperty(String key, String value, bool isString)
 {
   String output = "{";
-  String modifer = "";
-  if (isString)
-  {
-    modifer = "\"";
-  }
+  String modifer = isString ? "\"" : "";
   String extractedJson = jsonString.substring(1, jsonString.length() - 1);
   if (extractedJson.length() == 0)
   {
@@ -289,14 +348,8 @@ void Json::addIntegerProperty(String key, int value)
 
 void Json::addBooleanProperty(String key, bool value)
 {
-  if (value)
-  {
-    Json::addProperty(key, "true", false);
-  }
-  else
-  {
-    Json::addProperty(key, "false", false);
-  }
+  String booleanString = value ? "true" : "false";
+  Json::addProperty(key, booleanString, false);
 }
 
 String Json::getJson()
@@ -304,14 +357,15 @@ String Json::getJson()
   return jsonString;
 }
 
+void List::setList(String payload)
+{
+  listString = payload;
+}
+
 void List::addValue(String value, bool isString)
 {
   String output = "[";
-  String modifer = "";
-  if (isString)
-  {
-    modifer = "\"";
-  }
+  String modifer = isString ? "\"" : "";
   String extractedList = listString.substring(1, listString.length() - 1);
   if (extractedList.length() == 0)
   {
@@ -338,14 +392,8 @@ void List::addIntegerValue(int value)
 
 void List::addBooleanValue(bool value)
 {
-  if (value)
-  {
-    List::addValue("true", false);
-  }
-  else
-  {
-    List::addValue("false", false);
-  }
+  String booleanString = value ? "true" : "false";
+  List::addValue(booleanString, false);
 }
 
 String List::getList()

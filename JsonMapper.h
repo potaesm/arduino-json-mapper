@@ -6,6 +6,7 @@ class Json
 {
 public:
     Json();
+    void setJson(String payload);
     void addProperty(String key, String value, bool isString = false);
     void addStringProperty(String key, String value);
     void addIntegerProperty(String key, int value);
@@ -20,6 +21,7 @@ class List
 {
 public:
     List();
+    void setList(String payload);
     void addValue(String value, bool isString = false);
     void addStringValue(String value);
     void addIntegerValue(int value);
@@ -45,7 +47,16 @@ private:
     ::std::vector<String> jsonList;
 };
 
-extern String editValue(String payload, unsigned short index, String key, String value, bool isSetByIndex, bool isString);
+extern String patchListValue(String payload, unsigned short index, String value, bool isString);
+extern String patchListIntegerValue(String payload, unsigned short index, int value);
+extern String patchListBooleanValue(String payload, unsigned short index, bool value);
+extern String patchListStringValue(String payload, unsigned short index, String value);
+extern String patchJsonProperty(String payload, String key, String value, bool isString);
+extern String patchJsonIntegerProperty(String payload, String key, int value);
+extern String patchJsonBooleanProperty(String payload, String key, bool value);
+extern String patchJsonStringProperty(String payload, String key, String value);
+extern String removeListValue(String payload, unsigned short index);
+extern String removeJsonProperty(String payload, String key);
 extern String getListValue(String payload, unsigned short index);
 extern String getJsonProperty(String payload, String key);
 extern int parseInteger(String payload);
