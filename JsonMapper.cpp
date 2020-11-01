@@ -200,11 +200,29 @@ String getValue(String payload, unsigned short index, String key, bool isFindByI
   unsigned short splitIndex = 0;
   String returnValue = "";
   String data = "";
+  bool breakInvalid = false;
   unsigned short dataLength = payload.length();
   if (dataLength != 0)
   {
-    data = payload.substring(1, dataLength - 1);
-    dataLength = data.length();
+    if ((payload.charAt(0) == '{' && payload.charAt(dataLength - 1) == '}') || payload.charAt(0) == '[' && payload.charAt(dataLength - 1) == ']')
+    {
+      data = payload.substring(1, dataLength - 1);
+      dataLength = data.length();
+    }
+    else
+    {
+      unsigned short cutOffIndex = 0;
+      for (unsigned short i = dataLength - 1; i >= 0; i--)
+      {
+        if (payload.charAt(i) == '}' || payload.charAt(i) == ']')
+        {
+          cutOffIndex = i;
+          break;
+        }
+      }
+      data = payload.substring(1, cutOffIndex);
+      dataLength = data.length();
+    }
   }
   else
   {
@@ -236,7 +254,15 @@ String getValue(String payload, unsigned short index, String key, bool isFindByI
     }
     if (i == dataLength - 1)
     {
-      returnValue = data.substring(splitIndex + 1, dataLength);
+
+      if (splitIndex == 0)
+      {
+        returnValue = data.substring(splitIndex, dataLength);
+      }
+      else
+      {
+        returnValue = data.substring(splitIndex + 1, dataLength);
+      }
     }
     if (isFindByIndex)
     {
