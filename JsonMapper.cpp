@@ -211,17 +211,7 @@ String getValue(String payload, unsigned short index, String key, bool isFindByI
     }
     else
     {
-      unsigned short cutOffIndex = 0;
-      for (unsigned short i = dataLength - 1; i >= 0; i--)
-      {
-        if (payload.charAt(i) == '}' || payload.charAt(i) == ']')
-        {
-          cutOffIndex = i;
-          break;
-        }
-      }
-      data = payload.substring(1, cutOffIndex);
-      dataLength = data.length();
+      return returnValue;
     }
   }
   else
@@ -341,7 +331,45 @@ JsonList::JsonList()
 
 void Json::setJson(String payload)
 {
-  jsonString = payload;
+  unsigned short childSkipCounter = 0;
+  unsigned short startJsonIndex = 0;
+  bool isStartJsonIndexSet = false;
+  unsigned short endJsonIndex = 0;
+  bool isEndJsonIndexSet = false;
+  for (unsigned short i = 0; i < payload.length(); i++)
+  {
+    char currentChar = payload.charAt(i);
+    if (currentChar == '{' || currentChar == '[')
+    {
+      if (currentChar == '{' && !isStartJsonIndexSet)
+      {
+        startJsonIndex = i;
+        isStartJsonIndexSet = true;
+      }
+      childSkipCounter++;
+    }
+    if (currentChar == '}' || currentChar == ']')
+    {
+      childSkipCounter--;
+    }
+    if (childSkipCounter == 0)
+    {
+      if (currentChar == '}' && !isEndJsonIndexSet)
+      {
+        endJsonIndex = i;
+        isEndJsonIndexSet = true;
+        break;
+      }
+    }
+  }
+  if (isStartJsonIndexSet && isEndJsonIndexSet)
+  {
+    jsonString = payload.substring(startJsonIndex, endJsonIndex + 1);
+  }
+  else
+  {
+    jsonString = "{}";
+  }
 }
 
 void Json::addProperty(String key, String value, bool isString)
