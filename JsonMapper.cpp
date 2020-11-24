@@ -244,7 +244,6 @@ String getValue(String payload, unsigned short index, String key, bool isFindByI
     }
     if (i == dataLength - 1)
     {
-
       if (splitIndex == 0)
       {
         returnValue = data.substring(splitIndex, dataLength);
@@ -514,9 +513,16 @@ void JsonList::setJsonList(String payload)
   unsigned short dataLength = payload.length();
   if (dataLength != 0)
   {
-    jsonListString = payload;
-    data = payload.substring(1, dataLength - 1);
-    dataLength = data.length();
+    if ((payload.charAt(0) == '{' && payload.charAt(dataLength - 1) == '}') || payload.charAt(0) == '[' && payload.charAt(dataLength - 1) == ']')
+    {
+      jsonListString = payload;
+      data = payload.substring(1, dataLength - 1);
+      dataLength = data.length();
+    }
+    else
+    {
+      jsonListString = "";
+    }
   }
   else
   {
@@ -548,7 +554,14 @@ void JsonList::setJsonList(String payload)
     }
     if (i == dataLength - 1)
     {
-      jsonList.push_back(data.substring(splitIndex + 1, dataLength));
+      if (splitIndex == 0)
+      {
+        jsonList.push_back(data.substring(splitIndex, dataLength));
+      }
+      else
+      {
+        jsonList.push_back(data.substring(splitIndex + 1, dataLength));
+      }
       indexCounter++;
     }
   }
