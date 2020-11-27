@@ -57,11 +57,11 @@ private:
     ::std::vector<String> jsonList;
 };
 
-extern String patchListValue(String payload, unsigned short index, String value, bool isString);
+extern String patchListValue(String payload, unsigned short index, String value, bool isString = false);
 extern String patchListNumberValue(String payload, unsigned short index, float value);
 extern String patchListBooleanValue(String payload, unsigned short index, bool value);
 extern String patchListStringValue(String payload, unsigned short index, String value);
-extern String patchJsonProperty(String payload, String key, String value, bool isString);
+extern String patchJsonProperty(String payload, String key, String value, bool isString = false);
 extern String patchJsonNumberProperty(String payload, String key, float value);
 extern String patchJsonBooleanProperty(String payload, String key, bool value);
 extern String patchJsonStringProperty(String payload, String key, String value);
