@@ -146,7 +146,7 @@ String patchListValue(String payload, unsigned short index, String value, bool i
   return modifyValue(payload, index, "", value, true, isString);
 }
 
-String patchListIntegerValue(String payload, unsigned short index, int value)
+String patchListNumberValue(String payload, unsigned short index, float value)
 {
   return modifyValue(payload, index, "", String(value), true, false);
 }
@@ -172,7 +172,7 @@ String patchJsonProperty(String payload, String key, String value, bool isString
   return modifyValue(payload, 0, key, value, false, isString);
 }
 
-String patchJsonIntegerProperty(String payload, String key, int value)
+String patchJsonNumberProperty(String payload, String key, float value)
 {
   return modifyValue(payload, 0, key, String(value), false, false);
 }
@@ -292,9 +292,9 @@ String getJsonProperty(String payload, String key)
   return getValue(payload, 0, key, false);
 }
 
-int parseInteger(String payload)
+float parseNumber(String payload)
 {
-  return payload.toInt();
+  return payload.toFloat();
 }
 
 bool parseBoolean(String payload)
@@ -394,7 +394,7 @@ void Json::addStringProperty(String key, String value)
   Json::addProperty(key, value, true);
 }
 
-void Json::addIntegerProperty(String key, int value)
+void Json::addNumberProperty(String key, float value)
 {
   Json::addProperty(key, String(value), false);
 }
@@ -415,9 +415,9 @@ void Json::patchStringProperty(String key, String value)
   jsonString = patchJsonStringProperty(jsonString, key, value);
 }
 
-void Json::patchIntegerProperty(String key, int value)
+void Json::patchNumberProperty(String key, float value)
 {
-  jsonString = patchJsonIntegerProperty(jsonString, key, value);
+  jsonString = patchJsonNumberProperty(jsonString, key, value);
 }
 
 void Json::patchBooleanProperty(String key, bool value)
@@ -463,7 +463,7 @@ void List::addStringValue(String value)
   List::addValue(value, true);
 }
 
-void List::addIntegerValue(int value)
+void List::addNumberValue(float value)
 {
   List::addValue(String(value), false);
 }
@@ -484,9 +484,9 @@ void List::patchStringValue(unsigned short index, String value)
   listString = patchListStringValue(listString, index, value);
 }
 
-void List::patchIntegerValue(unsigned short index, int value)
+void List::patchNumberValue(unsigned short index, float value)
 {
-  listString = patchListIntegerValue(listString, index, value);
+  listString = patchListNumberValue(listString, index, value);
 }
 
 void List::patchBooleanValue(unsigned short index, bool value)
