@@ -543,11 +543,11 @@ void JsonList::setJsonList(String payload)
     {
       if (splitIndex == 0)
       {
-        jsonList.push_back(data.substring(splitIndex, i));
+        jsonList.addValue(data.substring(splitIndex, i));
       }
       else
       {
-        jsonList.push_back(data.substring(splitIndex + 1, i));
+        jsonList.addValue(data.substring(splitIndex + 1, i));
       }
       splitIndex = i;
       indexCounter++;
@@ -556,11 +556,11 @@ void JsonList::setJsonList(String payload)
     {
       if (splitIndex == 0)
       {
-        jsonList.push_back(data.substring(splitIndex, dataLength));
+        jsonList.addValue(data.substring(splitIndex, dataLength));
       }
       else
       {
-        jsonList.push_back(data.substring(splitIndex + 1, dataLength));
+        jsonList.addValue(data.substring(splitIndex + 1, dataLength));
       }
       indexCounter++;
     }
@@ -577,7 +577,7 @@ String JsonList::getJson(unsigned short index)
 {
   if (index < jsonLength)
   {
-    return jsonList[index];
+    return getListValue(jsonList.getList(), index);
   }
   else
   {

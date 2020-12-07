@@ -54,7 +54,7 @@ public:
 private:
     String jsonListString = "";
     unsigned short jsonLength = 0;
-    ::std::vector<String> jsonList;
+    ::List jsonList;
 };
 
 extern String patchListValue(String payload, unsigned short index, String value, bool isString = false);
