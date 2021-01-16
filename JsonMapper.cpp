@@ -287,9 +287,39 @@ String getListValue(String payload, unsigned short index)
   return getValue(payload, index, "", true);
 }
 
+float getListNumberValue(String payload, unsigned short index)
+{
+  return parseNumber(getValue(payload, index, "", true));
+}
+
+bool getListBooleanValue(String payload, unsigned short index)
+{
+  return parseBoolean(getValue(payload, index, "", true));
+}
+
+String getListStringValue(String payload, unsigned short index)
+{
+  return parseString(getValue(payload, index, "", true));
+}
+
 String getJsonProperty(String payload, String key)
 {
   return getValue(payload, 0, key, false);
+}
+
+float getJsonNumberProperty(String payload, String key)
+{
+  return parseNumber(getValue(payload, 0, key, false));
+}
+
+bool getJsonBooleanProperty(String payload, String key)
+{
+  return parseBoolean(getValue(payload, 0, key, false));
+}
+
+String getJsonStringProperty(String payload, String key)
+{
+  return parseString(getValue(payload, 0, key, false));
 }
 
 float parseNumber(String payload)
@@ -403,6 +433,18 @@ void Json::addBooleanProperty(String key, bool value)
 {
   String booleanString = value ? "true" : "false";
   Json::addProperty(key, booleanString, false);
+}
+
+void Json::cloneProperty(String targetKey, String source, String sourceKey)
+{
+  if (sourceKey.length() > 0)
+  {
+    Json::addProperty(targetKey, getJsonProperty(source, sourceKey), false);
+  }
+  else
+  {
+    Json::addProperty(targetKey, getJsonProperty(source, targetKey), false);
+  }
 }
 
 void Json::patchProperty(String key, String value, bool isString)
