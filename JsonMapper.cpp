@@ -200,7 +200,6 @@ String getValue(String payload, unsigned short index, String key, bool isFindByI
   unsigned short splitIndex = 0;
   String returnValue = "";
   String data = "";
-  bool breakInvalid = false;
   unsigned short dataLength = payload.length();
   if (dataLength != 0)
   {
